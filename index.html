@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Field Trip Form Filler</title>
+    <link rel="icon" type="image/png" href="images/icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: { DEFAULT: "#0b1f3a", mid: "#163a66" },
+              gold: { DEFAULT: "#c9a227", soft: "#e8d48b" },
+            },
+            fontFamily: {
+              display: ['"Libre Baskerville"', "Georgia", "serif"],
+              sans: ['"Source Sans 3"', "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="font-sans antialiased">
+    <button
+      id="help-btn"
+      type="button"
+      class="help-fab fixed top-4 right-4 z-40 rounded-md px-3 py-1.5 text-sm font-semibold text-white shadow-md hover:brightness-110"
+    >
+      Help
+    </button>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+      <!-- Header -->
+      <header class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-8">
+        <img
+          src="images/MBSH Logo.png"
+          alt="MBSH logo"
+          class="w-20 h-20 object-contain"
+          width="80"
+          height="80"
+        />
+        <div class="text-center">
+          <h1 class="display-font text-3xl sm:text-4xl font-bold text-navy tracking-tight">
+            Field Trip Form Filler
+          </h1>
+          <p class="display-font italic text-lg sm:text-xl text-navy-mid mt-1">
+            Made by Zachary Fernandez
+          </p>
+        </div>
+        <img
+          src="images/NJROTC Logo.png"
+          alt="NJROTC logo"
+          class="w-20 h-20 object-contain"
+          width="80"
+          height="80"
+        />
+      </header>
+
+      <p class="text-center text-[var(--muted)] max-w-2xl mx-auto mb-8 text-base sm:text-lg leading-relaxed">
+        Search for cadets by their name, ID number, or other identifying information.
+        Click a result to add them to the list, then generate your packet.
+      </p>
+
+      <!-- Controls -->
+      <section class="panel rounded-xl p-4 sm:p-5 mb-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+          <label class="text-sm font-semibold text-navy shrink-0 min-w-[12rem]">
+            Cadet Data Spreadsheet
+          </label>
+          <div class="flex flex-wrap items-center gap-3 flex-1">
+            <label
+              class="inline-flex items-center gap-2 cursor-pointer rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm font-medium hover:border-gold"
+            >
+              <span>Select file</span>
+              <input
+                id="spreadsheet-input"
+                type="file"
+                accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                class="hidden"
+              />
+            </label>
+            <span class="status-dot" id="spreadsheet-status" aria-hidden="true"></span>
+            <span id="spreadsheet-label" class="text-sm text-[var(--muted)] truncate">
+              No spreadsheet loaded
+            </span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+          <label for="output-name" class="text-sm font-semibold text-navy shrink-0 min-w-[12rem]">
+            Output File Name
+          </label>
+          <div class="flex items-center gap-2 flex-1 max-w-md">
+            <input
+              id="output-name"
+              type="text"
+              placeholder="Field Trip Packet"
+              class="w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy-mid/30 focus:border-navy-mid"
+            />
+            <span class="text-sm text-[var(--muted)]">.pdf</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-[var(--muted)]">
+          Spreadsheet data and your selected cadets are saved in this browser automatically
+          (no server). Generate downloads the filled PDF — no output folder needed.
+        </p>
+      </section>
+
+      <!-- Search + Generate -->
+      <section class="flex flex-col sm:flex-row gap-3 sm:items-center mb-4">
+        <label for="search-input" class="text-sm font-semibold text-navy shrink-0">
+          Search Cadets
+        </label>
+        <input
+          id="search-input"
+          type="search"
+          autocomplete="off"
+          placeholder="Name, student ID, grade…"
+          class="flex-1 rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy-mid/30 focus:border-navy-mid"
+        />
+        <button
+          id="generate-btn"
+          type="button"
+          class="btn-primary rounded-md px-4 py-2.5 text-sm font-semibold shadow-sm whitespace-nowrap"
+        >
+          Generate Form →
+        </button>
+      </section>
+
+      <!-- Results + Selection -->
+      <section class="grid grid-cols-1 lg:grid-cols-5 gap-4 min-h-[22rem]">
+        <div class="panel rounded-xl lg:col-span-3 flex flex-col overflow-hidden">
+          <div class="px-4 py-3 border-b border-[var(--line)] bg-[#f8fafc]">
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-navy">
+              Search Results
+            </h2>
+          </div>
+          <div id="results-list" class="flex-1 overflow-y-auto p-3 max-h-[28rem]">
+            <p class="text-sm text-[var(--muted)] p-3">
+              Please upload a spreadsheet with cadet data.
+            </p>
+          </div>
+        </div>
+
+        <div class="panel rounded-xl lg:col-span-2 flex flex-col overflow-hidden">
+          <div class="px-4 py-3 border-b border-[var(--line)] bg-[#f8fafc] flex items-center justify-between">
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-navy">
+              Selected Cadets
+            </h2>
+            <span
+              id="selected-count"
+              class="text-xs font-semibold bg-navy text-white rounded-full px-2 py-0.5"
+              >0</span
+            >
+          </div>
+          <div id="selected-list" class="flex-1 overflow-y-auto max-h-[22rem] bg-white"></div>
+          <div class="p-3 border-t border-[var(--line)] flex gap-2">
+            <button
+              id="remove-btn"
+              type="button"
+              class="flex-1 rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm font-medium hover:bg-[#f7fafc]"
+            >
+              Remove Selected
+            </button>
+            <button
+              id="clear-btn"
+              type="button"
+              class="flex-1 rounded-md border border-red-200 text-[var(--danger)] bg-white px-3 py-2 text-sm font-medium hover:bg-red-50"
+            >
+              Clear List
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="mt-10 text-center text-xs text-[var(--muted)]">
+        Participant information only · Up to 40 cadets per packet · Data stays in your browser
+      </footer>
+    </main>
+
+    <!-- Help modal -->
+    <div
+      id="help-modal"
+      class="modal-backdrop fixed inset-0 z-50 hidden flex items-center justify-center p-4"
+      aria-hidden="true"
+      role="dialog"
+      aria-labelledby="help-title"
+    >
+      <div class="panel max-w-lg w-full rounded-xl p-6 shadow-xl bg-white">
+        <h2 id="help-title" class="display-font text-xl font-bold text-navy mb-3">
+          How to Use the Field Trip Form Filler
+        </h2>
+        <ol class="list-decimal pl-5 space-y-3 text-sm text-[var(--ink)] leading-relaxed">
+          <li>
+            Upload a spreadsheet with cadet information. Required columns:
+            <strong>Student ID</strong>, <strong>First Name</strong>,
+            <strong>Last Name</strong>, <strong>Grade</strong>,
+            <strong>Phone Number</strong>, <strong>Address</strong>. Blank cells are fine.
+          </li>
+          <li>
+            Enter a name for the output PDF. When you generate, the file downloads to your
+            device.
+          </li>
+          <li>
+            Search for cadets using any identifying information. Click a result to add them
+            to your list.
+          </li>
+          <li>
+            Click <strong>Generate Form</strong> to create your field trip packet with filled
+            participant information.
+          </li>
+        </ol>
+        <p class="mt-4 text-sm text-[var(--muted)] leading-relaxed">
+          This app only fills participant fields (same PDF method as the desktop app).
+          Review the PDF for missing spreadsheet values or typos. Your spreadsheet and
+          selected list are saved locally in this browser. The first Generate may take
+          longer while the PDF engine loads.
+        </p>
+        <div class="mt-5 flex justify-end">
+          <button
+            id="help-close"
+            type="button"
+            class="btn-primary rounded-md px-4 py-2 text-sm font-semibold"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div
+      id="toast"
+      class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 text-white text-sm font-medium px-4 py-2.5 rounded-md shadow-lg max-w-[90vw]"
+      role="status"
+    ></div>
+
+    <!-- Libraries (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <!-- Pyodide + pypdf: exact old_app fill pipeline (pdf-lib cannot handle this form) -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.27.5/full/pyodide.js"></script>
+
+    <!-- App -->
+    <script src="js/storage.js"></script>
+    <script src="js/formatter.js"></script>
+    <script src="js/form-filler.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
